@@ -5,6 +5,7 @@ export const usrStore = defineStore('usuariosStore', {
     state: () => ({
         currentUser: null,
         reservasDeUser: null,
+        isAdmin: false,
     }),
 
     actions: {
@@ -16,7 +17,7 @@ export const usrStore = defineStore('usuariosStore', {
 
             return new Promise(async (resolve) => {
 
-                let mensajeError
+        
 
                 try {
                     const url = 'http://localhost:8080/usuario';
@@ -31,12 +32,11 @@ export const usrStore = defineStore('usuariosStore', {
 
                 } catch (error) {
 
-                    let mensajeRaw = error.response.data.message;
-                    mensajeError = mensajeRaw.replace(/Validation error: /g, "");
-
+             console.log(error)
+             resolve(error)
                 }
 
-                resolve(mensajeError)
+               
             })
 
         },
@@ -48,8 +48,6 @@ export const usrStore = defineStore('usuariosStore', {
 
             return new Promise(async (resolve) => {
 
-                let mensajeError
-
                 try {
                     const url = 'http://localhost:8080/usuario/login';
                     const data = {
@@ -58,9 +56,9 @@ export const usrStore = defineStore('usuariosStore', {
                     };
 
                     const response = await axios.post(url, data);
-
+                    console.log(response)
                     this.currentUser = response.data.result
-
+                    console.log(response.data.result)
                     delete this.currentUser.salt;
 
                     this.currentUser.contraseña = contraseña
@@ -68,37 +66,40 @@ export const usrStore = defineStore('usuariosStore', {
                     //ya que si se llego a este punto la validacion fue correcta
                     window.localStorage.setItem("usuario", JSON.stringify(response.data.result));
 
-                    this.cargarReservas()
+                    if(this.currentUser.idRol === 1) {
+                        console.log('es admin')
+                        this.isAdmin = true;
+                        console.log('es?',this.isAdmin)
+                    }else {
+                        this.isAdmin = false;
+                        console.log('esfalse')
+                    }
+
+                    //this.cargarReservas()
 
 
                 } catch (error) {
-                    mensajeError = error.response.data.message;
+                    console.log(error)
+                    resolve(error)
                 }
 
-                resolve(mensajeError)
+                
             })
 
         },
 
+        //inicia sesion automaticamente
         async cargarDataStorage() {
-
             // se llama desde el onMounted de la App.vue, toma los datos del user storage y intenta logear automaticamente
             // si la clave y email no fueron cambiadas relogea automaticamente, en caso contrario lanza un alert 
-
             let item = JSON.parse(String(window.localStorage.getItem("usuario")));
-
             if (item != null) {
-
-                let relogeado = await this.logIn(item.email, item.contraseña)
-
+                let relogeado = await this.logIn(item.email, item.contraseña);
                 if (relogeado != null) {
-                    alert("no se pudo relogear :(")
+                    alert("no se pudo relogear");
                     window.localStorage.removeItem("usuario");
                 }
-
-            }
-
-
+            };
         },
 
         async cargarReservas() {
@@ -142,12 +143,16 @@ export const usrStore = defineStore('usuariosStore', {
 
 
     },
-    getters: {
 
+    //chequea si el usuario esta loggeado
+    getters: {
         isLogged() {
             return this.currentUser != null;
         },
-    },
+        esAdmin(){
+            return this.isAdmin;
+        }
+    }
 
 })
 

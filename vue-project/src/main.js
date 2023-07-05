@@ -13,13 +13,13 @@ import loginUsuario from "./views/usuario/loginUsuario.vue"
 import DetallesUsuarioView from "./views/usuario/DetallesUsuario.vue"
 import ReservasUsuario from "./views/usuario/ReservasUsuario.vue"
 
-import Cartelera from "./views/Cartelera.vue"
+
+import CarteleraView from "./views/CarteleraView.vue"
+
 import Pelicula from './components/Pelicula.vue'
 import FuncionesDePelicula from './views/FuncionesDePelicula.vue'
-
 import ReservaView from "./views/ReservaView.vue"
 import SalaView from "./views/SalaView.vue"
-
 import PeliculaGenero from "./views/PeliculaGenero.vue"
 
 
@@ -32,7 +32,7 @@ const routes = [
     { path : "/detallesUsuario", component: DetallesUsuarioView,},
     { path : "/reservasUsuario", component: ReservasUsuario,},
     
-    { path : "/cartelera", component: Cartelera,},
+    { path : "/cartelera", component: CarteleraView,},
     { path : "/pelicula/:id", component : Pelicula},
     { path : "/funciones/:idPelicula", component : FuncionesDePelicula },
 
