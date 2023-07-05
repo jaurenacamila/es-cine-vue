@@ -3,17 +3,14 @@
         <div class="formulario_lg">
             <h2>INICIAR SESION</h2>
             <div>
-
                 <div class="inputBox">
                     <input type="text" required v-model="this.email">
                     <span>email</span>
                 </div>
-
                 <div class="inputBox">
                     <input type="password" required v-model="this.contraseña">
                     <span>Contraseña</span>
                 </div>
-
                 <button type="submit" class="ingresar" @click="ingresar">Iniciar Sesión</button>
 
                 <div v-if="this.error1" class="alert alert-danger" role="alert">
@@ -26,14 +23,13 @@
         </div>
     </div>
     <div v-if="usrStore.isLogged" class="container">
-        <h1>you are already logged in</h1>
-        <button type="submit" class="salir" @click="salir">Salir</button>
+        <h1>Hola!</h1>
+        <button type="submit" class="salir" @click="salir">Ir a detalles</button>
     </div>
 </template>
 
 <script>
 import { usrStore } from '../../components/store/usrStore'
-import { useRouter } from "vue-router";
 
 document.title = "Iniciar Sesion"
 
@@ -78,7 +74,7 @@ export default {
 
         salir() {
             // metodo salir de usuario
-            this.usrStore.logOut()
+            this.$router.push("/detallesUsuario");
         }
     },
     created() {

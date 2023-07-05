@@ -77,8 +77,8 @@ export default {
 
         async registrse() {
 
-            this.error1 = false
-            this.error2 = false
+            this.error1 = false //campos vacios
+            this.error2 = false //dsitinta contraseña al repetir
             this.error3 = false
 
             if (this.nombre == '' || this.apellido == '' || this.email == '' || this.contraseña == '' || this.contraseñaRep == '') {
@@ -108,7 +108,7 @@ export default {
         },
 
         salir() {
-            this.usrStore.logOut()
+            this.$router.push("/detallesUsuario");
         }
     },
     created() {

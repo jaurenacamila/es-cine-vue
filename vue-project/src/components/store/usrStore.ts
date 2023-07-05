@@ -17,7 +17,7 @@ export const usrStore = defineStore('usuariosStore', {
 
             return new Promise(async (resolve) => {
 
-        
+                let mensajeError
 
                 try {
                     const url = 'http://localhost:8080/usuario';
@@ -32,11 +32,12 @@ export const usrStore = defineStore('usuariosStore', {
 
                 } catch (error) {
 
-             console.log(error)
-             resolve(error)
+                    let mensajeRaw = error.response.data.message;
+                    mensajeError = mensajeRaw.replace(/Validation error: /g, "");
+
                 }
 
-               
+                resolve(mensajeError)
             })
 
         },
@@ -47,6 +48,8 @@ export const usrStore = defineStore('usuariosStore', {
             //en caso contrario devuelve un String con el mensaje de error
 
             return new Promise(async (resolve) => {
+
+                let mensajeError
 
                 try {
                     const url = 'http://localhost:8080/usuario/login';
@@ -59,8 +62,8 @@ export const usrStore = defineStore('usuariosStore', {
                     console.log(response)
                     this.currentUser = response.data.result
                     console.log(response.data.result)
-                    delete this.currentUser.salt;
 
+                    delete this.currentUser.salt;
                     this.currentUser.contraseña = contraseña
                     //piso la contraseña hashed por la contraseña que ingreso el Usuario
                     //ya que si se llego a este punto la validacion fue correcta
@@ -79,11 +82,12 @@ export const usrStore = defineStore('usuariosStore', {
 
 
                 } catch (error) {
-                    console.log(error)
-                    resolve(error)
+                    console.log(mensajeError)
+                    mensajeError = error.data.result
+                   
                 }
 
-                
+                resolve(mensajeError)
             })
 
         },
@@ -136,8 +140,8 @@ export const usrStore = defineStore('usuariosStore', {
         logOut() {
             //log out y limpia el localStorage
             this.currentUser = null;
-
             window.localStorage.removeItem("usuario");
+            this.isAdmin =false
         },
 
 

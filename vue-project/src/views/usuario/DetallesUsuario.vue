@@ -7,6 +7,7 @@
                 <li><router-link to="/crear-funcion">Crear Función</router-link></li>
                 <li><router-link to="/crear-funcion">Obtener Usuarios</router-link></li>
                 <li><router-link to="/crear-funcion">Obtener Reservar</router-link></li>
+                <button type="submit" class="salir" @click="salir">Cerrar Sesion</button>
             </ul>
         </div>
         <div class="container" v-else>

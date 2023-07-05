@@ -16,9 +16,16 @@
         </div>
     </div>
     <h3> {{ this.usrStore }}</h3>
-    <!-- <div v-if="this.usrStore.currentUser.esAdmin">
-        <button class="reserve-button">AGREGAR PELICULA</button>
-    </div> -->
+        <div v-if="this.usrStore.isLogged">
+            <div class="container" v-if="this.usrStore.esAdmin">
+            <!-- <button @click="agregarPelicula" class="reserve-button">Agregar Película</button> -->
+            <form @submit="agregarPelicula" id="fomr1">
+                <input type="text" v-model="nuevaPelicula.title" placeholder="Título de la película" required id="titulo">
+                <input type="text" v-model="nuevaPelicula.poster_path" placeholder="Ruta del póster" required id="poster">
+                <button type="submit">Agregar Película</button>
+            </form>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -33,7 +40,9 @@
         },
         created() {
             this.buscarPeliculas();
+            
         },
+
         methods: {
             buscarPeliculas() {
                 document.title = "Cartelera"
@@ -84,6 +93,17 @@
 
             },
             getMoviePoster(posterPath) { return `https://image.tmdb.org/t/p/w500/${posterPath}` },
+
+            agregarPelicula() {
+                // Aquí puedes agregar la lógica para agregar una nueva película
+                const nuevaPelicula = {
+                id: 123,
+                title: "Nueva Película",
+                poster_path: "/ruta-de-la-imagen.jpg"
+                };
+                this.peliculas.push(nuevaPelicula);
+            },
+
         }
     };
 /*
