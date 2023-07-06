@@ -33,6 +33,7 @@
 <script>
 
     import axios from "axios";
+    import { usrStore } from '../components/store/usrStore'
 
     export default {
 
@@ -43,7 +44,8 @@
                 funcionSala: this.$route.params.sala,
                 funcionHorario: this.$route.params.horario,
                 seats: [],
-                reserva: {}
+                reserva: {},
+                usrStore: usrStore()
             };
         },
 
@@ -68,12 +70,15 @@
 
             async getSeats() {
                 try {
-                    const response = await axios.get(
-                    `http://localhost:8080/sala/${this.funcionSala}`
-                    );
-                    console.log("los asientos", response.data.result.Asientos);
-                    this.seats = response.data.result.Asientos;
-                    this.verificarAsientos();
+                    const response = await axios.get(`http://localhost:8080/sala/${this.funcionSala}`);
+                    const asientos = response.data.result.Asientos;
+                    console.log('los asientos que me traigo', asientos)
+                    asientos.forEach((asiento) => {
+                        if (asiento.estado) {
+                            asiento.unavailable = true;
+                        }
+                    })
+                    this.seats = asientos;
                 } catch (error) {
                     console.log(error);
                 }
@@ -102,27 +107,33 @@
             },
 
             async submitReservation() {
-                const asientosSeleccionados = this.seats.filter((seat) => seat.selected).map((seat) => seat.numeroAsiento);
-                try {
-                    if ((asientosSeleccionados.length-1) === 0) {
+                if (!this.usrStore.isLogged) {
+                    alert('tenes que loggearte');
+                } else {
+                    const asientoSeleccionado = this.seats.filter((seat) => seat.selected).map((seat) => seat.numeroAsiento);
+                    console.log('asiento seleciconado:' , asientoSeleccionado)
+                    try {
                         const requestData = { 
-                            asientosIds: asientosSeleccionados,
+                            asientos: asientoSeleccionado,
+                            sala: this.funcionSala
                         };
-                        console.log(requestData);
-                        await axios.put(`http://localhost:8080/sala/${this.funcionSala}`, {requestData,}); 
-                    } else {
-                        alert('no seleccionaste ninguno!');
+                        console.log('data que mandoo', requestData);
+                        //cambia el estado de los asientos
+                        await axios.put(`http://localhost:8080/sala/${this.funcionSala}`, requestData); 
+                        alert('Reserva realizada con éxito')
+                        this.$router.push("/reservasUsuario");
+                    } catch (error) {
+                        console.error("Error al guardar la reserva:", error);
                     }
-                } catch (error) {
-                    console.error("Error al guardar la reserva:", error);
                 }
+           
             },
 
             verificarAsientos() {
-                this.seats.forEach((seat) => { 
-                    if (seat.reservado) {
+                this.seats.forEach((seat) => {
+                    if (seat.estado) {
                         seat.unavailable = true;
-                        seat.selected = false; 
+                        seat.selected = false;
                     }
                 });
             }
