@@ -1,49 +1,49 @@
 <template>
     <div v-if="this.usrStore.isLogged">
-  
-  
-      <div class="container">
-        <h1>Reservas De Usuario</h1>
-      </div>
-  
-      <div class="container" v-for="reserva in this.usrStore.reservasDeUser">
-        <h6 class="tituloID">Reserva #{{ reserva.idReserva }}</h6>
-        <h6 class="tituloID">Sala '{{ reserva.Funcion.sala }}'</h6>
-        <h6 class="tituloID">Asiento {{ reserva.Asiento.numeroAsiento }}</h6>
-        <h6 class="tituloID">Horario {{ reserva.Funcion.Horario }}</h6>
-        <h6 class="tituloID">pelicula id #{{ reserva.Funcion.idPelicula }}</h6>
-  
-      </div>
-  
+        <div v-if="this.usrStore.isAdmin">
+            <h1>Perfil Admin</h1>
+            <button>Ver todas las reservas</button>
+        </div>
+        <div v-else>
+            <div class="container">
+                <h1>Tus reservas</h1>
+                <div class="container" v-for="reserva in this.usrStore.reservasDeUser">
+                    <h6 class="tituloID">Reserva #{{ reserva.idReserva }}</h6>
+                    <h6 class="tituloID">Sala '{{ reserva.Funcion.sala }}'</h6>
+                    <h6 class="tituloID">Asiento {{ reserva.asientos }}</h6>
+                    <h6 class="tituloID">Horario {{ reserva.Funcion.Horario }}</h6>
+                    <h6 class="tituloID">Película id: {{ reserva.Funcion.idPelicula }}</h6>                </div>
+            </div>
+        </div>
     </div>
-  
     <div class="container" v-else>
-  
-      <span>no estas logeado</span>
-  
+        <span>No estas logeado</span>
     </div>
-  </template>
+</template>
   
   
   
-  <script>
-  import { usrStore } from '../../components/store/usrStore'
+<script>
+    import { usrStore } from '../../components/store/usrStore'
   
-  export default {
-    data() {
-      return {
-        usrStore: usrStore()
-      }
-    },
-    methods: {
+    export default {
+
+        data() {
+            return {
+                usrStore: usrStore(),
+            }
+        },
+
+        methods: {
+           
+    
+        },
+
+        created() {
+            document.title = "Reservas"
+        },
   
-  
-    },
-    created() {
-      document.title = "Reservas"
-    },
-  
-  }
+    }
   
   </script>
   

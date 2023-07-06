@@ -73,7 +73,7 @@ export const usrStore = defineStore('usuariosStore', {
                         this.isAdmin = true;
                     }
 
-                    //this.cargarReservas()
+                    this.cargarReservas()
 
 
                 } catch (error) {
@@ -102,34 +102,23 @@ export const usrStore = defineStore('usuariosStore', {
         },
 
         async cargarReservas() {
-
             try {
-
                 const { idUsuario } = this.currentUser;
-
                 const url = `http://localhost:8080/usuario/${idUsuario}/reserva`;
-
                 const response = await axios.get(url);
-
+                console.log(response)
                 let data = response.data.result;
-
                 data.forEach(reserva => {
                     reserva.Funcion.Horario = reserva.Funcion.Horario.substring(0, 5);
                 });
-
                 this.reservasDeUser = data;
-
             } catch (error) {
                 if(error.response.data.message.endsWith("no tiene Reservas")){
-
                     console.log(error.response.data.message);
-
                 } else{
                     console.error(error.response.data.message);
                 }
-    
             };
-
         },
 
         logOut() {
