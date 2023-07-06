@@ -43,6 +43,7 @@
                 movie: "",
                 funcionSala: this.$route.params.sala,
                 funcionHorario: this.$route.params.horario,
+                funcionId : this.$route.params.idFuncion,
                 seats: [],
                 reserva: {},
                 usrStore: usrStore()
@@ -120,8 +121,10 @@
                         console.log('data que mandoo', requestData);
                         //cambia el estado de los asientos
                         await axios.put(`http://localhost:8080/sala/${this.funcionSala}`, requestData); 
+                        this.guardarReserva();
                         alert('Reserva realizada con éxito')
                         this.$router.push("/reservasUsuario");
+                        
                     } catch (error) {
                         console.error("Error al guardar la reserva:", error);
                     }
@@ -129,14 +132,23 @@
            
             },
 
-            verificarAsientos() {
-                this.seats.forEach((seat) => {
-                    if (seat.estado) {
-                        seat.unavailable = true;
-                        seat.selected = false;
-                    }
-                });
-            }
+            async guardarReserva() {
+                const asientoSeleccionado = this.seats.filter((seat) => seat.selected).map((seat) => seat.numeroAsiento);
+                const usuarioId = this.usrStore.currentUser.idUsuario
+                console.log(usuarioId)
+                console.log(this.funcionId)
+                try {
+                    const data = {
+                        asientos: asientoSeleccionado,
+                        usuario: usuarioId,
+                        funcion: this.funcionId
+                    };
+                    const response = await axios.post(`http://localhost:8080/usuario/${usuarioId}/reserva`, data);
+                    console.log('Reserva ok,', response)
+                } catch (error) {
+                    console.error('Error al guardar la reserva:', error);
+                }
+            },
 
         },
 

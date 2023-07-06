@@ -59,7 +59,6 @@ export const usrStore = defineStore('usuariosStore', {
                     };
 
                     const response = await axios.post(url, data);
-                    console.log(response)
                     this.currentUser = response.data.result
                     console.log(response.data.result)
 
@@ -72,10 +71,6 @@ export const usrStore = defineStore('usuariosStore', {
                     if(this.currentUser.idRol === 1) {
                         console.log('es admin')
                         this.isAdmin = true;
-                        console.log('es?',this.isAdmin)
-                    }else {
-                        this.isAdmin = false;
-                        console.log('esfalse')
                     }
 
                     //this.cargarReservas()
