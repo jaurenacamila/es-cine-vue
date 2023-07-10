@@ -12,7 +12,9 @@
                 <div class="menu-container">
                     <button class="boton-agregar" @click="this.mostrarUsuarios()">Obtener Usuarios</button>
                 </div>
-                <li><router-link to="/crear-funcion">Obtener Reservas</router-link></li>
+                <div class="menu-container">
+                    <button class="boton-agregar" @click="this.mostrarLasReservas()">Obtener Reservas</button>
+                </div>
                 <button type="submit" class="salir" @click="salir">Cerrar Sesion</button>
             </ul>
         </div>
@@ -84,6 +86,21 @@
             <hr>
         </div>
     </div>
+    <div class="container-adm" v-show="mostrarReservas">
+        <div class="menu-container">
+            <h2>Reservas</h2>
+            <button @click="this.getReservas()">Obtener Reservas</button>
+            <ul>
+                <li v-for="reserva in reservas" :key="reserva.id">
+                     Reserva: {{ reserva.idReserva }} - 
+                     Usuario: {{ reserva.idUsuario }} - 
+                     Funcion: {{ reserva.idFuncion }} - 
+                     Asientos: {{ reserva.asientos }}
+                </li>
+            </ul>
+            <hr>
+        </div>
+    </div>
 </template>
   
   
@@ -100,9 +117,11 @@
         sala: "",
         horario: "",
         usuarios: [],
+        reservas: [],
         mostrarAgregarPeli: false,
         mostrarCrearFuncion: false,
-        mostrarGetUsuarios: false
+        mostrarGetUsuarios: false,
+        mostrarReservas: false
 
       }
     },
@@ -180,6 +199,19 @@
             });
         },
 
+        getReservas() {
+            axios.get('http://localhost:8080/reservas/')
+            .then(response => {
+                const reservasGet = response.data.result;
+                console.log(reservasGet)
+                this.reservas = reservasGet;
+            })
+            .catch(error => {
+                console.error("Error al obtener las reservas:", error);
+                console.log("no reservas")
+            });
+        },
+
         mostrarAgregar() {
             if(this.mostrarAgregarPeli) {
                 this.mostrarAgregarPeli = false
@@ -200,10 +232,18 @@
             }else {
                 this.mostrarGetUsuarios = true
             }
+        }, 
+
+        mostrarLasReservas() {
+            if(this.mostrarReservas) {
+                this.mostrarReservas = false
+            }else {
+                this.mostrarReservas = true
+            }
         }
     },
 
-
+   
 
     created() {
           document.title = "Detalles"
@@ -296,6 +336,9 @@
     }
     .input-box {
         margin-top: 10px;
+    }
+    li {
+        text-decoration: none;
     }
   
 </style>
