@@ -9,8 +9,10 @@
                 <div class="menu-container">
                     <button class="boton-agregar" @click="this.mostrarCrear()">Crear Función</button>
                 </div>
-                <li><router-link to="/crear-funcion">Obtener Usuarios</router-link></li>
-                <li><router-link to="/crear-funcion">Obtener Reservar</router-link></li>
+                <div class="menu-container">
+                    <button class="boton-agregar" @click="this.mostrarUsuarios()">Obtener Usuarios</button>
+                </div>
+                <li><router-link to="/crear-funcion">Obtener Reservas</router-link></li>
                 <button type="submit" class="salir" @click="salir">Cerrar Sesion</button>
             </ul>
         </div>
@@ -68,6 +70,20 @@
             </div>
         </div>
     </div>
+    <div class="container-adm" v-show="mostrarGetUsuarios">
+        <div class="menu-container">
+            <h2>Usuarios</h2>
+            <button @click="this.getUsuarios()">Obtener Usuarios</button>
+            <ul>
+                <li v-for="usuario in usuarios" :key="usuario.id">
+                    Nombre: {{ usuario.nombre }} - 
+                    Apellido: {{ usuario.apellido }} - 
+                    Email: {{ usuario.email }}
+                </li>
+            </ul>
+            <hr>
+        </div>
+    </div>
 </template>
   
   
@@ -81,20 +97,22 @@
       return {
         usrStore: usrStore(),
         idPeli: "",
+        sala: "",
+        horario: "",
+        usuarios: [],
         mostrarAgregarPeli: false,
         mostrarCrearFuncion: false,
-        sala: "",
-
+        mostrarGetUsuarios: false
 
       }
     },
 
     methods: {
   
-      salir() {
-              this.usrStore.logOut()
-              this.$router.push("/login");
-      },
+        salir() {
+                this.usrStore.logOut()
+                this.$router.push("/login");
+        },
 
         agregarPelicula() {
             const movieId = this.idPeli;
@@ -147,6 +165,21 @@
             });   
         },
 
+        getUsuarios() {
+            axios.get('http://localhost:8080/usuario/')
+            .then(response => {
+                const usuarios = response.data.result;
+                console.log(usuarios)
+                const usuariosRol2 = usuarios.filter(usuario => usuario.Rol.rol === 'user');
+                console.log(usuariosRol2);
+                this.usuarios = usuariosRol2;
+            })
+            .catch(error => {
+                console.error("Error al obtener los usuarios:", error);
+                console.log("no hay ususarios")
+            });
+        },
+
         mostrarAgregar() {
             if(this.mostrarAgregarPeli) {
                 this.mostrarAgregarPeli = false
@@ -160,8 +193,17 @@
             }else {
                 this.mostrarCrearFuncion = true
             }
+        },
+        mostrarUsuarios() {
+            if(this.mostrarGetUsuarios) {
+                this.mostrarGetUsuarios = false
+            }else {
+                this.mostrarGetUsuarios = true
+            }
         }
     },
+
+
 
     created() {
           document.title = "Detalles"
