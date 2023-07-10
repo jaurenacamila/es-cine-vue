@@ -3,7 +3,9 @@
         <div class="menu-container" v-if="this.usrStore.esAdmin">
             <h1>Adminitrador</h1>
             <ul class="menu-list">
-                <li><router-link to="/agregar-pelicula">Agregar Película</router-link></li>
+                <div class="menu-container">
+                    <button class="boton-agregar" @click="this.mostrarAgregar()">Agregar Película</button>
+                </div>
                 <li><router-link to="/crear-funcion">Crear Función</router-link></li>
                 <li><router-link to="/crear-funcion">Obtener Usuarios</router-link></li>
                 <li><router-link to="/crear-funcion">Obtener Reservar</router-link></li>
@@ -18,17 +20,41 @@
             <button type="submit" class="salir" @click="salir">Cerrar Sesion</button>
         </div>
     </div>
+    <div class="container-adm">
+        <div class="menu-container">
+            <div id="agregar-peli" v-show="mostrarAgregarPeli">
+                <h2>Agregar Pelicula</h2>
+                <hr>
+                <div class="formulario_lg">
+                    <div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="inputBox">
+                                    <span>Ingresa el ID</span>
+                                    <input type="text" required v-model="this.idPeli">
+                                    <button class="boton-agregar" type="submit" @click="this.agregarPelicula()">Agregar Pelicula</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
   
   
   
   <script>
   import { usrStore } from '../../components/store/usrStore'
+  import axios from 'axios'
   
   export default {
     data() {
       return {
-        usrStore: usrStore()
+        usrStore: usrStore(),
+        idPeli: "",
+        mostrarAgregarPeli: false,
       }
     },
 
@@ -39,9 +65,40 @@
               this.$router.push("/login");
       },
 
-      ingresarPelicula() {
+      agregarPelicula() {
+      const movieId = this.idPeli;
 
-      }
+      // Realizar el PUT a la base de datos
+      axios.put('http://localhost:8080/pelicula/', { id: movieId })
+        .then(response => {
+            axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=6311677ef041038470aae345cd71bb78&language=es`)
+            .then(response => {
+                // Obtener el título de la película de la respuesta
+                const tituloPelicula = response.data.title;
+                // Mostrar el título en un alert
+                alert(`Se agregó: ${tituloPelicula}`);
+                this.idPeli = "";
+            })
+            .catch(error => {
+                alert("Error con los datos de la película")
+                console.error("Error al obtener los datos de la película:", error);
+                this.idPeli = "";
+            });
+        })
+        .catch(error => {
+            alert("Error al agregar la película")
+            console.error("Error al agregar la película:", error);
+            this.idPeli = "";
+        });
+        
+    },
+        mostrarAgregar() {
+            if(this.mostrarAgregarPeli) {
+                this.mostrarAgregarPeli = false
+            }else {
+                this.mostrarAgregarPeli = true
+            }
+        }
   
   
     },
@@ -56,7 +113,7 @@
   
   
 <style scoped>
-    .container {
+    .container, .container-adm {
         gap: 20px;
         display: flex;
         align-items: center;
@@ -72,6 +129,9 @@
         z-index: 1;
         font-family: "Montserrat", sans-serif;
     }
+    .container-adm {
+        margin-top: 50px;
+    }
     .container button {
         width: 100%;
         padding: 10px;
@@ -86,6 +146,12 @@
     }
     .salir:hover {
         background-color: #b83939;
+    }
+    .boton-admin {
+        background-color: #17a2b8;
+    }
+    .boton-admin:hover{
+        background-color: #0f5d69;
     }
     .menu-container {
         border-radius: 5px;
@@ -108,6 +174,19 @@
         background-color: lightgray;
         border-radius: 5px;
         padding: 5px;
+    }
+
+    .boton-agregar {
+        background-color: #17a2b8;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    input {
+        margin: 20px 0;
     }
   
 </style>

@@ -12,7 +12,8 @@
                     <h6 class="tituloID">Sala '{{ reserva.Funcion.sala }}'</h6>
                     <h6 class="tituloID">Asiento {{ reserva.asientos }}</h6>
                     <h6 class="tituloID">Horario {{ reserva.Funcion.Horario }}</h6>
-                    <h6 class="tituloID">Película id: {{ reserva.Funcion.idPelicula }}</h6>                </div>
+                    <h6 class="tituloID">Película id: {{ reserva.Funcion.idPelicula }}</h6>                
+                </div>
             </div>
         </div>
     </div>
