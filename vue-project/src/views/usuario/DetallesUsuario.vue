@@ -6,7 +6,9 @@
                 <div class="menu-container">
                     <button class="boton-agregar" @click="this.mostrarAgregar()">Agregar Película</button>
                 </div>
-                <li><router-link to="/crear-funcion">Crear Función</router-link></li>
+                <div class="menu-container">
+                    <button class="boton-agregar" @click="this.mostrarCrear()">Crear Función</button>
+                </div>
                 <li><router-link to="/crear-funcion">Obtener Usuarios</router-link></li>
                 <li><router-link to="/crear-funcion">Obtener Reservar</router-link></li>
                 <button type="submit" class="salir" @click="salir">Cerrar Sesion</button>
@@ -20,21 +22,46 @@
             <button type="submit" class="salir" @click="salir">Cerrar Sesion</button>
         </div>
     </div>
-    <div class="container-adm">
+    <div class="container-adm" v-show="mostrarAgregarPeli">
         <div class="menu-container">
-            <div id="agregar-peli" v-show="mostrarAgregarPeli">
-                <h2>Agregar Pelicula</h2>
-                <hr>
-                <div class="formulario_lg">
-                    <div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="inputBox">
-                                    <span>Ingresa el ID</span>
-                                    <input type="text" required v-model="this.idPeli">
-                                    <button class="boton-agregar" type="submit" @click="this.agregarPelicula()">Agregar Pelicula</button>
-                                </div>
+            <h2>Agregar Pelicula</h2>
+            <hr>
+            <div class="formulario_lg">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputBox">
+                                <span>Ingresa el ID</span>
+                                <input type="text" required v-model="this.idPeli">
+                                <button class="boton-agregar" type="submit" @click="this.agregarPelicula()">Agregar Pelicula</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>   
+    <div class="container-adm" v-show="mostrarCrearFuncion">
+        <div class="menu-container">
+            <h2>Crear Funcion</h2>
+            <hr>
+            <div class="formulario_lg">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputBox">
+                                <span>Ingresa el ID de la pelicula</span>
+                                <input type="text" required v-model="this.idPeli">
+                            </div>
+                            <div class="inputBox">
+                                <span>Ingresa la sala</span>
+                                <input type="text" required v-model="this.sala">
+                            </div>
+                            <div class="inputBox">
+                                <span>Ingresa el horario</span>
+                                <input type="text" required v-model="this.horario">
+                            </div>
+                            <button class="boton-agregar" type="submit" @click="this.agregarFuncion()">Crear Funcion</button>
                         </div>
                     </div>
                 </div>
@@ -55,6 +82,10 @@
         usrStore: usrStore(),
         idPeli: "",
         mostrarAgregarPeli: false,
+        mostrarCrearFuncion: false,
+        sala: "",
+
+
       }
     },
 
@@ -65,50 +96,80 @@
               this.$router.push("/login");
       },
 
-      agregarPelicula() {
-      const movieId = this.idPeli;
-
-      // Realizar el PUT a la base de datos
-      axios.put('http://localhost:8080/pelicula/', { id: movieId })
-        .then(response => {
-            axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=6311677ef041038470aae345cd71bb78&language=es`)
+        agregarPelicula() {
+            const movieId = this.idPeli;
+            axios.post('http://localhost:8080/pelicula/', { id: movieId })
             .then(response => {
-                // Obtener el título de la película de la respuesta
-                const tituloPelicula = response.data.title;
-                // Mostrar el título en un alert
-                alert(`Se agregó: ${tituloPelicula}`);
-                this.idPeli = "";
+                axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=6311677ef041038470aae345cd71bb78&language=es`)
+                .then(response => {
+                    // Obtener el título de la película de la respuesta
+                    const tituloPelicula = response.data.title;
+                    // Mostrar el título en un alert
+                    alert(`Se agregó: ${tituloPelicula}`);
+                    this.idPeli = "";
+                })
+                .catch(error => {
+                    alert("Error con los datos de la película")
+                    console.error("Error al obtener los datos de la película:", error);
+                    this.idPeli = "";
+                });
             })
             .catch(error => {
-                alert("Error con los datos de la película")
-                console.error("Error al obtener los datos de la película:", error);
+                alert("Error al agregar la película")
+                console.error("Error al agregar la película:", error);
                 this.idPeli = "";
             });
-        })
-        .catch(error => {
-            alert("Error al agregar la película")
-            console.error("Error al agregar la película:", error);
-            this.idPeli = "";
-        });
-        
-    },
+        },
+
+        agregarFuncion() {
+            const idPelicula = this.idPeli;
+            const sala = this.sala;
+            const horario = this.horario;
+            const data = {
+                sala,
+                horario,
+                idPelicula
+            }
+            axios.post('http://localhost:8080/funcion/', data)
+            .then(response => {
+                alert("Se agregó la función");
+                    this.idPeli = "";
+                    this.sala = "";
+                    this.horario = ""
+                
+            })
+            .catch(error => {
+                    alert("Error al crear la función")
+                    console.error("Error al crear la función", error);
+                    this.idPeli = "";
+                    this.sala = "";
+                    this.horario = ""
+            });   
+        },
+
         mostrarAgregar() {
             if(this.mostrarAgregarPeli) {
                 this.mostrarAgregarPeli = false
             }else {
                 this.mostrarAgregarPeli = true
             }
+        },
+        mostrarCrear() {
+            if(this.mostrarCrearFuncion) {
+                this.mostrarCrearFuncion = false
+            }else {
+                this.mostrarCrearFuncion = true
+            }
         }
-  
-  
     },
+
     created() {
           document.title = "Detalles"
-      },
+    },
   
   }
   
-  </script>
+</script>
   
   
   
@@ -187,6 +248,12 @@
 
     input {
         margin: 20px 0;
+    }
+    .boton-agregar:hover{
+        background-color: #0f5d69;
+    }
+    .input-box {
+        margin-top: 10px;
     }
   
 </style>
